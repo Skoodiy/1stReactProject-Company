@@ -1,30 +1,65 @@
+import React from 'react';
+
 import AppInfo from '../app-info/app-info';
 import SearchPanel from '../search-panel/search-panel';
 import AppFilter from '../app-filter/app-filter';
 import EmployeeList from '../employee-list/employee-list';
 import EmployeeAddForm from '../employee-add-form/employee-add-form';
+
 import './app.css';
 
-function App() {
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state ={
+      data: [
+        {id: 1, name: 'Kostya M.', salary: 4000, increase: true},
+        {id: 2, name: 'Postya N.', salary: 11000, increase: false},
+        {id: 3, name: 'Mostya K.', salary: 3000, increase: false},
+      ]
+    };
+    this.maxId = 4;
+  }
 
-  const data = [
-    {id: 1, name: 'Kostya M.', salary: 4000, increase: true},
-    {id: 2, name: 'Postya N.', salary: 11000, increase: false},
-    {id: 3, name: 'Mostya K.', salary: 3000, increase: false},
-  ]
+  deleteItem = (id) => {
+    this.setState(({data}) => {      
+      return {
+        data: data.filter(item => item.id !== id)
+      }
+    })
+  }
 
-  return (
-    <div className="app">
-      <AppInfo/>
+  addEmployee = (name, salary) => {
+    if (name && salary) {
+      let newEmployee = {id: this.maxId, name, salary, increase: false};
+      this.maxId += 1;
+  
+      this.setState(({data}) => {
+        return {
+          data: [...data, newEmployee]
+        }
+      })
+    }
+  } 
 
-      <div className="search-panel">
-        <SearchPanel/>
-        <AppFilter/>
+  render() {
+    return (
+      <div className="app">
+        <AppInfo/>
+  
+        <div className="search-panel">
+          <SearchPanel/>
+          <AppFilter/>
+        </div>
+        <EmployeeList 
+            data={this.state.data}
+            onDelete={this.deleteItem} />
+        <EmployeeAddForm
+            onAddEmployee={this.addEmployee}
+        />
       </div>
-      <EmployeeList data={data}/>
-      <EmployeeAddForm/>
-    </div>
-  )
+    )
+  }
 }
 
 export default App;
