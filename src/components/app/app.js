@@ -13,9 +13,9 @@ class App extends React.Component {
     super(props);
     this.state ={
       data: [
-        {id: 1, name: 'Kostya M.', salary: 4000, increase: true},
-        {id: 2, name: 'Postya N.', salary: 11000, increase: false},
-        {id: 3, name: 'Mostya K.', salary: 3000, increase: false},
+        {id: 1, name: 'Kostya M.', salary: 4000, increase: true, rise: true},
+        {id: 2, name: 'Postya N.', salary: 11000, increase: false, rise: false},
+        {id: 3, name: 'Mostya K.', salary: 3000, increase: false, rise: false},
       ]
     };
     this.maxId = 4;
@@ -31,7 +31,13 @@ class App extends React.Component {
 
   addEmployee = (name, salary) => {
     if (name && salary) {
-      let newEmployee = {id: this.maxId, name, salary, increase: false};
+      let newEmployee = {
+        id: this.maxId,
+        name,
+        salary,
+        increase: false,
+        rise: false
+      };
       this.maxId += 1;
   
       this.setState(({data}) => {
@@ -40,12 +46,24 @@ class App extends React.Component {
         }
       })
     }
-  } 
+  }
+
+  onToggleProp = (id, prop) => {
+    this.setState(({data}) => ({
+      data: data.map(item => {
+        if (item.id === id) {
+          return {...item, [prop]: !item[prop]}
+        }
+        return item;
+      })
+    }))
+  }
+
 
   render() {
     return (
       <div className="app">
-        <AppInfo/>
+        <AppInfo data={this.state.data}/>
   
         <div className="search-panel">
           <SearchPanel/>
@@ -53,7 +71,8 @@ class App extends React.Component {
         </div>
         <EmployeeList 
             data={this.state.data}
-            onDelete={this.deleteItem} />
+            onDelete={this.deleteItem}
+            onToggleProp={this.onToggleProp}/>
         <EmployeeAddForm
             onAddEmployee={this.addEmployee}
         />
