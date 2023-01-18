@@ -14,9 +14,11 @@ class App extends React.Component {
     this.state ={
       data: [
         {id: 1, name: 'Kostya M.', salary: 4000, increase: true, rise: true},
-        {id: 2, name: 'Postya N.', salary: 11000, increase: false, rise: false},
+        {id: 2, name: 'Postya N.', salary: 900, increase: false, rise: false},
         {id: 3, name: 'Mostya K.', salary: 3000, increase: false, rise: false},
-      ]
+      ],
+      term: '',
+      filter: 'all'
     };
     this.maxId = 4;
   }
@@ -59,18 +61,55 @@ class App extends React.Component {
     }))
   }
 
+  searchEmp = (items, term) => {
+    if(term.length === 0) {
+      return items;
+    }
+    
+    return items.filter(item => {
+      return item.name.indexOf(term) > -1
+    })
+  }
+
+  onUpdateSearch = (term) => {
+    this.setState({term});
+  }
+
+  filterEmp = (items, filter) => {
+    switch (filter) {
+      case 'all':
+        return items;
+      case 'rised': 
+        return items.filter(item => item.rise);
+      case 'more1000':
+        return items.filter(item => item.salary > 1000);
+      default:
+        return items;
+    }
+  }
+
+  onFilterSelect = (filter) => {
+    this.setState({filter});
+  }
 
   render() {
+    const {data, term, filter} = this.state;
+    const visibleData = this.filterEmp(this.searchEmp(data, term), filter);
+
     return (
       <div className="app">
-        <AppInfo data={this.state.data}/>
+        <AppInfo data={data}/>
   
         <div className="search-panel">
-          <SearchPanel/>
-          <AppFilter/>
+          <SearchPanel
+            onUpdateSearch={this.onUpdateSearch}
+          />
+          <AppFilter 
+            filter={filter}
+            onFilterSelect={this.onFilterSelect}/>
         </div>
         <EmployeeList 
-            data={this.state.data}
+            data={visibleData}
             onDelete={this.deleteItem}
             onToggleProp={this.onToggleProp}/>
         <EmployeeAddForm
